@@ -1,5 +1,7 @@
 package com.example;
 
 public class MyClass {
-//张日天
+    public static void main(String[] args) {
+        //大家好
+    }
 }
