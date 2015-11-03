@@ -21,6 +21,7 @@ public class SATSolver {
      */
     public static Environment solve(Formula formula) {
         // TODO: implement this.
+        //test
         throw new RuntimeException("not yet implemented.");
     }
 
