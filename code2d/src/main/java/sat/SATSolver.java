@@ -49,6 +49,7 @@ public class SATSolver {
         Clause smallest = clauses.first();
         for(Clause i : clauses){
             smallest = smallest.size() > i.size() ? i : smallest;
+            //sort instead of search
             if(i.size() == 0){
                 return null;
             }
