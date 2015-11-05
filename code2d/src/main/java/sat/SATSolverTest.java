@@ -11,9 +11,13 @@ import java.util.List;
 import sat.env.*;
 import sat.formula.*;
 
-//import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
+import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
 
 public class SATSolverTest {
+    public static final String outpDir = "/Users/liusu/Desktop/BoolAssignment.txt";
+    public static final String filename = "/Users/liusu/Desktop/largeSat.cnf";
+//    public final String filename = "/Users/liusu/Desktop/largeUnsat.cnf";
+//    public final String filename = "/Users/liusu/Desktop/s8Sat.cnf";
     Literal a = PosLiteral.make("a");
     Literal b = PosLiteral.make("b");
     Literal c = PosLiteral.make("c");
@@ -93,9 +97,7 @@ public class SATSolverTest {
 
         /********** Step 1: Open File **********
          */
-//        File file = new File("/Users/liusu/Desktop/largeUnsat.cnf");
-        File file = new File("/Users/liusu/Desktop/largeSat.cnf");
-//        File file = new File("/Users/liusu/Desktop/s8Sat.cnf");
+        File file = new File(filename);
         BufferedReader reader = null;
         /********** Step 2: Initialize Containers **********
          */
@@ -161,9 +163,9 @@ public class SATSolverTest {
 
             /********** Step 4: Solve the formula **********
              */
-            if(!isTwoSat){
-//                solveTwoSat();
-            }else if(isTwoSat){
+            if(isTwoSat){
+                solveTwoSat();
+            }else{
                 Clause[] newClauses = new Clause[clauses.size()];
                 clauses.toArray(newClauses);
                 Formula f = makeFm(newClauses);
@@ -177,7 +179,7 @@ public class SATSolverTest {
 
                 /********** Step 5: Output result **********
                   */
-                File output = new File("/Users/liusu/Desktop/BoolAssignment.txt");
+                File output = new File(outpDir);
                 if(!output.exists()) {
                     try{
                         output.createNewFile();
