@@ -11,7 +11,7 @@ import java.util.List;
 import sat.env.*;
 import sat.formula.*;
 
-import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
+//import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
 
 public class SATSolverTest {
     public static final String outpDir = "/Users/liusu/Desktop/BoolAssignment.txt";
@@ -163,8 +163,8 @@ public class SATSolverTest {
 
             /********** Step 4: Solve the formula **********
              */
-            if(isTwoSat){
-                solveTwoSat();
+            if(!isTwoSat){
+//                solveTwoSat();
             }else{
                 Clause[] newClauses = new Clause[clauses.size()];
                 clauses.toArray(newClauses);
