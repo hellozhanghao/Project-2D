@@ -3,12 +3,16 @@ package sat;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import sat.env.*;
 import sat.formula.*;
+
+//import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
+
 public class SATSolverTest {
     Literal a = PosLiteral.make("a");
     Literal b = PosLiteral.make("b");
@@ -89,15 +93,10 @@ public class SATSolverTest {
 
         /********** Step 1: Open File **********
          */
-        System.out.println("Process Starts!!!");
-        long processStart = System.nanoTime();
 //        File file = new File("/Users/liusu/Desktop/largeUnsat.cnf");
         File file = new File("/Users/liusu/Desktop/largeSat.cnf");
 //        File file = new File("/Users/liusu/Desktop/s8Sat.cnf");
         BufferedReader reader = null;
-        long processFinish = System.nanoTime();
-        long processTime = processFinish - processStart;
-        System.out.println("Time:" + processTime/1000000000.0 + "s\n");
         /********** Step 2: Initialize Containers **********
          */
         List<Clause> clauses = new ArrayList<>();       //Store all the clauses
@@ -105,11 +104,11 @@ public class SATSolverTest {
         List<Variable> variables = new ArrayList<>();   //Store all the variables
         List<Literal> posLiterals = new ArrayList<>();  //Store all the positive literals
         List<Literal> negLiterals = new ArrayList<>();  //Store all the negative literals
-
+        Boolean isTwoSat = true;
         /********** Step 3: Parse the file **********
          */
-//        System.out.println("Parsing Starts!!!");
-//        long processStart = System.nanoTime();
+        System.out.println("Parsing Starts!!!");
+        long processStart = System.nanoTime();
         try{
             reader = new BufferedReader(new FileReader(file));
             String tempString = null;                 //Store the line parsed temporarily
@@ -121,25 +120,29 @@ public class SATSolverTest {
                     String[] info = tempString.split(" ");
                     numberOfVariables = Integer.parseInt(info[2]);  //Get Number of Variables
                     for(int i = 1 ; i < numberOfVariables + 1 ; i++){
-                        variables.add(new Variable("x"+i));                     //Create variable list
+                        variables.add(new Variable(""+i));                     //Create variable list
                         posLiterals.add(PosLiteral.make(variables.get(i - 1))); //Create positive literal list
                         negLiterals.add(NegLiteral.make(variables.get(i - 1))); //Create negative literal list
                     }
                 }else if(line > 2){
                     if(tempString.length() > 0){
                         String[] info = tempString.split(" ");    //Split the line by space
+                        isTwoSat = info.length <= 3 ? true : false;
                         int currentLiteral;                       //Store the current literal temporarily
                         for(int i = 0 ; i < info.length ; i++) {
                             currentLiteral = Integer.parseInt(info[i]);
                             if (currentLiteral != 0) {
                                 // Add current literal to the current clause
                                 if (currentLiteral > 0) {
+//                                    oneClause.add(PosLiteral.make(Math.abs(currentLiteral)+""));
                                     oneClause.add(posLiterals.get(Math.abs(currentLiteral) - 1));
                                 } else {
+//                                    oneClause.add(NegLiteral.make(Math.abs(currentLiteral)+""));
                                     oneClause.add(negLiterals.get(Math.abs(currentLiteral) - 1));
                                 }
                             } else{
                                 // Make a new clause if "0" is met
+//                                System.out.println("Check point 1");
                                 literals = new Literal[oneClause.size()];
                                 oneClause.toArray(literals);
                                 if(makeCl(literals) != null){
@@ -152,23 +155,51 @@ public class SATSolverTest {
                 }
                 line++;
             }
-//            long processFinish = System.nanoTime();
-//            long processTime = processFinish - processStart;
-//            System.out.println("Time:" + processTime/1000000000.0 + "s\n");
+            long processFinish = System.nanoTime();
+            long processTime = processFinish - processStart;
+            System.out.println("Time:" + processTime/1000000000.0 + "s\n");
 
             /********** Step 4: Solve the formula **********
              */
-            Clause[] newClauses = new Clause[clauses.size()];
-            clauses.toArray(newClauses);
-            Formula f = makeFm(newClauses);
-//            System.out.println("Process Starts!!!");
-//            long processStart1 = System.nanoTime();
-            Environment env = SATSolver.solve(f);
-//            long processFinish1 = System.nanoTime();
-//            long processTime1 = processFinish1 - processStart1;
-//            System.out.println("Time:" + processTime1/1000000000.0 + "s\n");
-            reader.close();
-            System.out.println(env);
+            if(!isTwoSat){
+//                solveTwoSat();
+            }else if(isTwoSat){
+                Clause[] newClauses = new Clause[clauses.size()];
+                clauses.toArray(newClauses);
+                Formula f = makeFm(newClauses);
+                System.out.println("Process Starts!!!");
+                long processStart1 = System.nanoTime();
+                Environment env = SATSolver.solve(f);
+                long processFinish1 = System.nanoTime();
+                long processTime1 = processFinish1 - processStart1;
+                System.out.println("Time:" + processTime1 / 1000000000.0 + "s\n");
+                reader.close();
+
+                /********** Step 5: Output result **********
+                  */
+                File output = new File("/Users/liusu/Desktop/BoolAssignment.txt");
+                if(!output.exists()) {
+                    try{
+                        output.createNewFile();
+                    }catch(IOException e){
+                        e.printStackTrace();
+                    }
+                }
+                FileWriter clear = new FileWriter(output);
+                clear.write("");
+                clear.close();
+                if(env != null){
+                    String set1 = env.toString().substring(13, env.toString().length() - 1);
+                    String set2[] = set1.split(", ");
+                    FileWriter writer = new FileWriter(output,true);
+                    for(String i : set2){
+                        String[] singleAssignment = i.split("->");
+                        writer.write(singleAssignment[0] + ":" + singleAssignment[1] + "\n");
+                    }
+                    writer.close();
+                }
+                System.out.println(env);
+            }
         }catch (IOException e){
             System.out.println("Error");
             e.printStackTrace();
