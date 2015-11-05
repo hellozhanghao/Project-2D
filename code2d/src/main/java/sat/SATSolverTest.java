@@ -15,7 +15,7 @@ import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
 
 public class SATSolverTest {
     public static final String outpDir = "/Users/liusu/Desktop/BoolAssignment.txt";
-    public static final String filename = "/Users/liusu/Desktop/largeUnsat.cnf";
+    public static final String filename = "/Users/liusu/Desktop/largeSat.cnf";
 
     // Helper function for constructing a formula.  Takes
     // a variable number of arguments, e.g.

@@ -84,6 +84,7 @@ public final class TwoSat {
                 i++;
             }
             try{
+                int count = 0;
                 File output = new File(SATSolverTest.outpDir);
                 FileWriter clear = new FileWriter(output);
                 clear.write("");
@@ -92,12 +93,14 @@ public final class TwoSat {
                 for(T variable: variables){    // all true literals
                     Literal<T> lit = new Literal<>(variable, true);
                     if (assignment.containsKey(lit)){
-                        writer.write(lit + ":" + "TRUE\n");
+                        if(count != 0) writer.write(lit + ":" + "TRUE\n");
                         System.out.println(lit+":"+assignment.get(lit));
+                        count++;
                     }
                     else{
-                        writer.write(lit + ":" + "FALSE\n");
+                        if(count != 0) writer.write(lit + ":" + "FALSE\n");
                         System.out.println(lit+":"+false);
+                        count++;
                     }
                 }
                 writer.close();
