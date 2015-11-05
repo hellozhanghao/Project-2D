@@ -23,7 +23,8 @@ public class SATSolver {
      *         null if no such environment exists.
      */
     public static Environment solve(Formula formula) {
-        ImList<Clause> clauses = formula.getClauses();
+        ImList<Clause> clauses;
+        clauses = formula.getClauses();
         Environment result = new Environment();
         return solve(clauses,result);
     }
@@ -45,23 +46,20 @@ public class SATSolver {
             return env;
         }
         Clause smallest = clauses.first();
-        //TODO: improve the efficiency of search algorithm
-        for(Clause i : clauses){
-            int thisSize = i.size();
-            smallest = smallest.size() > thisSize ? i : smallest;
-            //sort instead of search
-            if(thisSize == 0){
-                return null;
+            for(Clause i : clauses){
+                int thisSize = i.size();
+                smallest = smallest.size() > thisSize ? i : smallest;
+                if(thisSize == 0){
+                    return null;
+                }
             }
-        }
-        //TODO: improve the efficiency of recursion, simplify the process
         if(smallest.size() == 1){
             Literal l = smallest.chooseLiteral();
             env = l instanceof PosLiteral ? env.put(l.getVariable(), Bool.TRUE) : env.put(l.getVariable(), Bool.FALSE);
             return solve(substitute(clauses,l),env);
         }else{
             Literal l = smallest.chooseLiteral();
-            ImList reducedClauses = substitute(clauses, l);
+            ImList<Clause> reducedClauses = substitute(clauses, l);
             Environment setTrue = solve(reducedClauses,env.put(l.getVariable(),Bool.TRUE));
             return setTrue != null ? setTrue : solve(substitute(clauses,l.getNegation()),env.put(l.getVariable(),Bool.FALSE));
         }
@@ -78,8 +76,7 @@ public class SATSolver {
      * @return a new list of clauses resulting from setting l to true
      */
     private static ImList<Clause> substitute(ImList<Clause> clauses, Literal l) {
-        // TODO: improve the efficiency of substitute since it will be called multiple times
-        ImList<Clause> newClauses = new EmptyImList<Clause>();
+        ImList<Clause> newClauses = new EmptyImList<>();
         for(Clause i : clauses){
             Clause newOne = i.reduce(l);
             newClauses = newOne != null ? newClauses.add(newOne) : newClauses;

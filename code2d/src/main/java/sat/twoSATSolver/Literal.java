@@ -1,17 +1,5 @@
 package sat.twoSATSolver;
 
-/**
- * Created by WSY on 4/11/15.
- */
-/******************************************************************************
- * File: Literal.java
- * Author: Keith Schwarz (htiek@cs.stanford.edu)
- *
- * A class representing a literal in a boolean expression.  A literal is either
- * a variable or its negation, and is represented as a pair of some value
- * representing a literal and a boolean flag indicating whether the value is
- * positive or its negation.
- */
 public final class Literal<T> {
     private final T mValue;            // The variable in question
     private final boolean mIsPositive; // Whether this is X (true) or ~X (false)
@@ -38,7 +26,7 @@ public final class Literal<T> {
      * @return A Literal holding the negation of this literal.
      */
     public Literal<T> negation() {
-        return new Literal<T>(value(), !isPositive());
+        return new Literal<>(value(), !isPositive());
     }
 
     /**

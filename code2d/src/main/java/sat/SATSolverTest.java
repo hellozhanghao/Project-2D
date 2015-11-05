@@ -11,44 +11,11 @@ import java.util.List;
 import sat.env.*;
 import sat.formula.*;
 
-//import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
+import static sat.twoSATSolver.TwoSatTest.solveTwoSat;
 
 public class SATSolverTest {
     public static final String outpDir = "/Users/liusu/Desktop/BoolAssignment.txt";
-    public static final String filename = "/Users/liusu/Desktop/largeSat.cnf";
-//    public final String filename = "/Users/liusu/Desktop/largeUnsat.cnf";
-//    public final String filename = "/Users/liusu/Desktop/s8Sat.cnf";
-    Literal a = PosLiteral.make("a");
-    Literal b = PosLiteral.make("b");
-    Literal c = PosLiteral.make("c");
-    Literal na = a.getNegation();
-    Literal nb = b.getNegation();
-    Literal nc = c.getNegation();
-
-
-    // TODO: add the main method that reads the .cnf file and calls SATSolver.solve to determine the satisfiability
-
-
-    public void testSATSolver1() {
-        // (a v b)
-        Environment e = SATSolver.solve(makeFm(makeCl(a, b)));
-/*
-    	assertTrue( "one of the literals should be set to true",
-    			Bool.TRUE == e.get(a.getVariable())  
-    			|| Bool.TRUE == e.get(b.getVariable())	);
-    	
-*/
-    }
-
-
-    public void testSATSolver2() {
-        // (~a)
-        Environment e = SATSolver.solve(makeFm(makeCl(na)));
-/*
-    	assertEquals( Bool.FALSE, e.get(na.getVariable()));
-*/
-    }
-
+    public static final String filename = "/Users/liusu/Desktop/largeUnsat.cnf";
 
     // Helper function for constructing a formula.  Takes
     // a variable number of arguments, e.g.
@@ -70,8 +37,6 @@ public class SATSolverTest {
             try{
                 c = c.add(l);
             }catch(NullPointerException ex){
-//                ex.printStackTrace();
-//                System.out.println("null pointer");
                 return null;
             }
         }
@@ -94,11 +59,10 @@ public class SATSolverTest {
      */
 
     public static void main(String[] args){
-
         /********** Step 1: Open File **********
          */
         File file = new File(filename);
-        BufferedReader reader = null;
+        BufferedReader reader;
         /********** Step 2: Initialize Containers **********
          */
         List<Clause> clauses = new ArrayList<>();       //Store all the clauses
@@ -107,44 +71,42 @@ public class SATSolverTest {
         List<Literal> posLiterals = new ArrayList<>();  //Store all the positive literals
         List<Literal> negLiterals = new ArrayList<>();  //Store all the negative literals
         Boolean isTwoSat = true;
+        Boolean startParsing = false;
         /********** Step 3: Parse the file **********
          */
         System.out.println("Parsing Starts!!!");
         long processStart = System.nanoTime();
         try{
             reader = new BufferedReader(new FileReader(file));
-            String tempString = null;                 //Store the line parsed temporarily
-            int line = 1;                       //Record the line number
-            int numberOfVariables = 0;          //Record the number of variables
+            String tempString;                 //Store the line parsed temporarily
+            int numberOfVariables;          //Record the number of variables
             List<Literal> oneClause = new ArrayList<>();    //Store the literals parsed so far (before meet a 0)
             while ((tempString = reader.readLine()) != null) {
-                if(line == 2){
-                    String[] info = tempString.split(" ");
-                    numberOfVariables = Integer.parseInt(info[2]);  //Get Number of Variables
-                    for(int i = 1 ; i < numberOfVariables + 1 ; i++){
-                        variables.add(new Variable(""+i));                     //Create variable list
-                        posLiterals.add(PosLiteral.make(variables.get(i - 1))); //Create positive literal list
-                        negLiterals.add(NegLiteral.make(variables.get(i - 1))); //Create negative literal list
-                    }
-                }else if(line > 2){
-                    if(tempString.length() > 0){
+                if(tempString.length() > 0){
+                    if(tempString.charAt(0) == 'p'){
+                        startParsing = true;
+                        String[] info = tempString.split(" ");
+                        numberOfVariables = Integer.parseInt(info[2]);  //Get Number of Variables
+                        for(int i = 1 ; i < numberOfVariables + 1 ; i++){
+                            variables.add(new Variable(""+i));                     //Create variable list
+                            posLiterals.add(PosLiteral.make(variables.get(i - 1))); //Create positive literal list
+                            negLiterals.add(NegLiteral.make(variables.get(i - 1))); //Create negative literal list
+                        }
+                    }else if(startParsing){
                         String[] info = tempString.split(" ");    //Split the line by space
-                        isTwoSat = info.length <= 3 ? true : false;
+                        isTwoSat = info.length == 3;
                         int currentLiteral;                       //Store the current literal temporarily
-                        for(int i = 0 ; i < info.length ; i++) {
-                            currentLiteral = Integer.parseInt(info[i]);
+                        for(String i : info) {
+                            currentLiteral = Integer.parseInt(i);
                             if (currentLiteral != 0) {
                                 // Add current literal to the current clause
                                 if (currentLiteral > 0) {
-//                                    oneClause.add(PosLiteral.make(Math.abs(currentLiteral)+""));
                                     oneClause.add(posLiterals.get(Math.abs(currentLiteral) - 1));
                                 } else {
-//                                    oneClause.add(NegLiteral.make(Math.abs(currentLiteral)+""));
                                     oneClause.add(negLiterals.get(Math.abs(currentLiteral) - 1));
                                 }
                             } else{
                                 // Make a new clause if "0" is met
-//                                System.out.println("Check point 1");
                                 literals = new Literal[oneClause.size()];
                                 oneClause.toArray(literals);
                                 if(makeCl(literals) != null){
@@ -153,9 +115,10 @@ public class SATSolverTest {
                                 oneClause.clear();
                             }
                         }
+
                     }
                 }
-                line++;
+
             }
             long processFinish = System.nanoTime();
             long processTime = processFinish - processStart;
@@ -163,8 +126,8 @@ public class SATSolverTest {
 
             /********** Step 4: Solve the formula **********
              */
-            if(!isTwoSat){
-//                solveTwoSat();
+            if(isTwoSat){
+                solveTwoSat();
             }else{
                 Clause[] newClauses = new Clause[clauses.size()];
                 clauses.toArray(newClauses);
@@ -180,13 +143,6 @@ public class SATSolverTest {
                 /********** Step 5: Output result **********
                   */
                 File output = new File(outpDir);
-                if(!output.exists()) {
-                    try{
-                        output.createNewFile();
-                    }catch(IOException e){
-                        e.printStackTrace();
-                    }
-                }
                 FileWriter clear = new FileWriter(output);
                 clear.write("");
                 clear.close();
@@ -200,7 +156,12 @@ public class SATSolverTest {
                     }
                     writer.close();
                 }
-                System.out.println(env);
+                if(env != null) {
+                    System.out.println("Satisfiable");
+                    System.out.println(env);
+                }else{
+                    System.out.println("Not Satisfiable");
+                }
             }
         }catch (IOException e){
             System.out.println("Error");

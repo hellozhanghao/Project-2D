@@ -1,16 +1,6 @@
 package sat.twoSATSolver;
 
-/**
- * Created by WSY on 4/11/15.
- */
-/*****************************************************************************
- * File: DirectedGraph.java
- * Author: Keith Schwarz (htiek@cs.stanford.edu)
- *
- * A class representing a directed graph.  Internally, the class is represented
- * by an adjacency list.
- */
-import java.util.*; // For HashMap, HashSet
+import java.util.*;
 
 public final class DirectedGraph<T> implements Iterable<T> {
     /* A map from nodes in the graph to sets of outgoing edges.  Each

@@ -1,28 +1,18 @@
 package sat.twoSATSolver;
 
-/**
- * Created by WSY on 4/11/15.
- */
-/******************************************************************************
- * File: Clause.java
- * Author: Keith Schwarz (htiek@cs.stanford.edu)
- *
- * A class representing a clause in a 2SAT formula.  Each clause a disjunction
- * of two literals.
- */
 public final class Clause<T> {
-    private final Literal<T> mOne; // The two literals this clause is made of.
-    private final Literal<T> mTwo;
+    private final Literal<T> firstLiteral; // The two literals this clause is made of.
+    private final Literal<T> secondLiteral;
 
     /**
      * Constructs a new clause out of two literals.
      *
-     * @param one The first literal
-     * @param two The second literal
+     * @param first The first literal
+     * @param second The second literal
      */
-    public Clause(Literal<T> one, Literal<T> two) {
-        mOne = one;
-        mTwo = two;
+    public Clause(Literal<T> first, Literal<T> second) {
+        firstLiteral = first;
+        secondLiteral = second;
     }
 
     /**
@@ -31,7 +21,7 @@ public final class Clause<T> {
      * @return The first literal in this clause.
      */
     public Literal<T> first() {
-        return mOne;
+        return firstLiteral;
     }
 
     /**
@@ -40,7 +30,7 @@ public final class Clause<T> {
      * @return The second literal in this clause.
      */
     public Literal<T> second() {
-        return mTwo;
+        return secondLiteral;
     }
 
     /**
